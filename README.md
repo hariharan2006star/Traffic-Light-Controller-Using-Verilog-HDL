@@ -1,12 +1,15 @@
-# Traffic-Light-Controller-Using-Verilog-HDL
-Aim
+## Traffic-Light-Controller-Using-Verilog-HDL
+## NAME:Hariharan N
+## REG.NO:212223060079
+
+## Aim:
 To design and simulate a traffic light controller using Verilog HDL, and verify its functionality through a testbench in the Vivado 2023.1 simulation environment. The objective is to control the traffic lights for a junction with a specific time-based sequence for Red, Yellow, and Green lights.
 
-Apparatus Required
+## Apparatus Required:
 Vivado 2023.1 or equivalent Verilog simulation tool.
 Computer system with a suitable operating system.
 FPGA board (optional for hardware verification).
-Procedure
+## Procedure:
 Launch Vivado 2023.1:
 
 Open Vivado and create a new project.
@@ -29,63 +32,74 @@ Save and Document Results:
 
 Capture screenshots of the waveform and save the simulation logs to include in your report.
 
-Verilog Code for Traffic Light Controller
+## Verilog Code for Traffic Light Controller
+```
+module  traffic_light_controller_tb(input wire clk,
+                   input wire rst,
+                   output reg [2:0] lights);
+                   
+parameter [1:0] GREEN=2'b00,YELLOW=2'b01,RED=2'b10;
+reg [2:0] current_state,next_state;
+reg [3:0] counter;
 
-// traffic_light_controller.v
-module traffic_light_controller (
-    input wire clk,
-    input wire reset,
-    output reg [2:0] lights  // 3-bit output: [2]=Red, [1]=Yellow, [0]=Green
-);
-    // Define states
-    typedef enum reg [1:0] {
-        GREEN = 2'b00,
-        YELLOW = 2'b01,
-        RED = 2'b10
-    } state_t;
-
-    state_t current_state, next_state;
-    reg [3:0] counter;  // Timer counter
-
-    // State transition based on counter
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            current_state <= GREEN;
-            counter <= 0;
-        end else begin
-            if (counter == 4'd9) begin
-                current_state <= next_state;
-                counter <= 0;
-            end else begin
-                counter <= counter + 1;
-            end
-        end
+always @(posedge clk or posedge rst)
+begin 
+     if(rst)
+          begin
+               current_state<=GREEN;
+               counter<=0;
+          end
+     else
+         begin
+              if(counter==4'd9)
+              begin
+                   current_state<=next_state;
+                   counter<=0;
+               end
+               else
+               begin 
+               counter=counter+1;
+               end
+           end
     end
+    
+always @(*)begin
+case(current_state)
+   GREEN:
+   begin
+   lights=3'b001;
+   next_state=YELLOW;
+   end 
+   
+   YELLOW:
+   begin
+   lights=3'b010;
+   next_state=RED;
+   end
+   
+   RED:
+   begin
+   lights=3'b011;
+   next_state=GREEN;
+   end
+   
+   default:
+   begin
+   lights=3'b000;
+   next_state=GREEN;
+   end
+   
+   endcase
+end
+       
 
-    // Next state logic and output control
-    always @(*) begin
-        case (current_state)
-            GREEN: begin
-                lights = 3'b001;  // Green light on
-                next_state = YELLOW;
-            end
-            YELLOW: begin
-                lights = 3'b010;  // Yellow light on
-                next_state = RED;
-            end
-            RED: begin
-                lights = 3'b100;  // Red light on
-                next_state = GREEN;
-            end
-            default: begin
-                lights = 3'b000;  // All lights off
-                next_state = GREEN;
-            end
-        endcase
-    end
+     
+                
 endmodule
+```
 
-Testbench for Traffic Light Controller
+## Testbench for Traffic Light Controller
+```
 
 // traffic_light_controller_tb.v
 `timescale 1ns / 1ps
@@ -128,6 +142,11 @@ module traffic_light_controller_tb;
     end
 
 endmodule
+```
+
+## OUTPUT:
+![verilog](https://github.com/user-attachments/assets/16fc3d37-3ee4-449b-8d0f-d6ba8e44cc7d)
+
 
 
 Conclusion
